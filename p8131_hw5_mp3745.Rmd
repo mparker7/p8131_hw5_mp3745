@@ -26,3 +26,50 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
+
+## Problem 1
+
+#### (a)
+
+Read in the crab data
+```{r}
+crab_data = read.table("./data/HW5-crab.txt", header = TRUE)
+```
+
+
+Fit a Poisson model (m1) with log link with W as the single predictor
+```{r}
+m1 = glm(Sa ~ W, 
+         family = poisson, 
+         data = crab_data) 
+
+# View summary of m1
+summary(m1)
+
+# Check goodness of fit of M1
+m1_dev = sum(residuals(m1, type = 'deviance')^2)
+
+m1_pval = 1 - pchisq(m1_dev, (nrow(crab_data) - 2))
+```
+
+Since p- value = `r m1_pval` < 0.05, we reject the null hypothesis of the model being a good fit for the data. The log ratio of the number of satellites for a 1 unit increase in carapace width is `r m1$coefficients[2]`. The log of the expected number of satellites for a crab with a zero carapace width is `r m1$coefficients[1]`.
+
+
+#### (b)
+
+Fit a model (m2) with W and Wt as predictors, then compare to m1
+```{r}
+m2 = glm(Sa ~ W + Wt, 
+         family = poisson, 
+         data = crab_data) 
+
+# View summary of m2
+summary(m2)
+
+# Compare m2 to m1
+m1_m2_dev_stat = m1$deviance - m2$deviance
+m1_m2_df = (nrow(crab_data) - 2) - (nrow(crab_data) - 3) 
+m1_m2_pval = 1 - pchisq(m1_m2_dev_stat, df = m1_m2_df) 
+```
+
+Since the p-value = `r m1_m2_pval` < 0.05, we reject the null hypothesis that the smaller model fits the data as well as the larger model. This means the smaller model has a lack of fit and the larger model is better to use. In m2, the log ratio of the number of satellites for a 1 unit increase in carapace width is `r m2$coefficients[2]`, holding weight constant. The log ratio of the number of satellites for a 1 unit increase in weight is `r m2$coefficients[3]`, holding carapace width constant. The log of the expected number of satellites for a crab with a zero carapace width and zero weight is `r m2$coefficients[1]`.

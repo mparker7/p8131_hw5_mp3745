@@ -370,7 +370,86 @@ summary {
 </div>
 
 
+<div id="problem-1" class="section level2">
+<h2>Problem 1</h2>
+<div id="a" class="section level4">
+<h4>(a)</h4>
+<p>Read in the crab data</p>
+<pre class="r"><code>crab_data = read.table(&quot;./data/HW5-crab.txt&quot;, header = TRUE)</code></pre>
+<p>Fit a Poisson model (m1) with log link with W as the single predictor</p>
+<pre class="r"><code>m1 = glm(Sa ~ W, 
+         family = poisson, 
+         data = crab_data) 
 
+# View summary of m1
+summary(m1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Sa ~ W, family = poisson, data = crab_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.8526  -1.9884  -0.4933   1.0970   4.9221  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -3.30476    0.54224  -6.095  1.1e-09 ***
+## W            0.16405    0.01997   8.216  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 632.79  on 172  degrees of freedom
+## Residual deviance: 567.88  on 171  degrees of freedom
+## AIC: 927.18
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code># Check goodness of fit of M1
+m1_dev = sum(residuals(m1, type = 'deviance')^2)
+
+m1_pval = 1 - pchisq(m1_dev, (nrow(crab_data) - 2))</code></pre>
+<p>Since p- value = 0 &lt; 0.05, we reject the null hypothesis of the model being a good fit for the data. The log ratio of the number of satellites for a 1 unit increase in carapace width is 0.1640451. The log of the expected number of satellites for a crab with a zero carapace width is -3.3047572.</p>
+</div>
+<div id="b" class="section level4">
+<h4>(b)</h4>
+<p>Fit a model (m2) with W and Wt as predictors, then compare to m1</p>
+<pre class="r"><code>m2 = glm(Sa ~ W + Wt, 
+         family = poisson, 
+         data = crab_data) 
+
+# View summary of m2
+summary(m2)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Sa ~ W + Wt, family = poisson, data = crab_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.9308  -1.9705  -0.5481   0.9700   4.9905  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)   
+## (Intercept) -1.29168    0.89929  -1.436  0.15091   
+## W            0.04590    0.04677   0.981  0.32640   
+## Wt           0.44744    0.15864   2.820  0.00479 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 632.79  on 172  degrees of freedom
+## Residual deviance: 559.89  on 170  degrees of freedom
+## AIC: 921.18
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code># Compare m2 to m1
+m1_m2_dev_stat = m1$deviance - m2$deviance
+m1_m2_df = (nrow(crab_data) - 2) - (nrow(crab_data) - 3) 
+m1_m2_pval = 1 - pchisq(m1_m2_dev_stat, df = m1_m2_df) </code></pre>
+<p>Since the p-value = 0.0046948 &lt; 0.05, we reject the null hypothesis that the smaller model fits the data as well as the larger model. This means the smaller model has a lack of fit and the larger model is better to use. In m2, the log ratio of the number of satellites for a 1 unit increase in carapace width is 0.045898, holding weight constant. The log ratio of the number of satellites for a 1 unit increase in weight is 0.4474357, holding carapace width constant. The log of the expected number of satellites for a crab with a zero carapace width and zero weight is -1.291679.</p>
+</div>
+</div>
 
 
 
