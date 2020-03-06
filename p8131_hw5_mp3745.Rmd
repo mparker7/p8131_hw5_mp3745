@@ -73,3 +73,47 @@ m1_m2_pval = 1 - pchisq(m1_m2_dev_stat, df = m1_m2_df)
 ```
 
 Since the p-value = `r m1_m2_pval` < 0.05, we reject the null hypothesis that the smaller model fits the data as well as the larger model. This means the smaller model has a lack of fit and the larger model is better to use. In m2, the log ratio of the number of satellites for a 1 unit increase in carapace width is `r m2$coefficients[2]`, holding weight constant. The log ratio of the number of satellites for a 1 unit increase in weight is `r m2$coefficients[3]`, holding carapace width constant. The log of the expected number of satellites for a crab with a zero carapace width and zero weight is `r m2$coefficients[1]`.
+
+
+#### (c)
+
+Check over dispersion in M2
+```{r}
+# Residuals
+m2_res = residuals(m2, type = 'pearson')
+
+m2_resid_points = tibble(
+  x = qnorm((173 + 1:173 + 0.5)/(2 * 173 + 1.125)),
+  y = sort(abs(m2_res))
+)
+
+m2_resid_points %>% 
+  ggplot(aes(x = x, y = y)) +
+  geom_point() + 
+  geom_abline(slope = 1) + 
+  scale_x_continuous(limits = c(0, 8)) +
+  scale_y_continuous(limits = c(0, 8)) +
+  labs(
+    x = "Expected Half-Normal Order Stats",
+    y = "Ordered Abs Pearson Residuals"
+  )
+```
+
+Based on the above plot, there may be overdispersion. There is clear deviance from the reference line.
+
+m2 with overdispersion
+```{r}
+# Estimate overdispersion parameter
+g = sum(m2_res^2)
+
+phi = g / (173 - 3)
+
+# m2 with overdispersion parameter
+summary(m2, dispersion = phi)
+```
+
+In the updated model, our estimates and their interpretations are still valid. In the updated model, the std. error has been inflated by `r phi`. This has caused the z value and Pr(>|z|) to change. The coefficients for the both carapace width and weight in the model have now clearly become insignificant, indicating that:
+
+* there may not be a significant association between carapace width with number of satellites, when accounting for weight, and
+
+* there may not be a significant association between weight with number of satellites, when accounting for carapce width.
