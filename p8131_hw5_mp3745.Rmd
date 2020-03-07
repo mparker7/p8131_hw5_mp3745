@@ -117,3 +117,31 @@ In the updated model, our estimates and their interpretations are still valid. I
 * there may not be a significant association between carapace width with number of satellites, when accounting for weight, and
 
 * there may not be a significant association between weight with number of satellites, when accounting for carapce width.
+
+
+## Problem 2
+
+#### (a)
+
+Read in the parasite data
+```{r}
+par_data = read.table("./data/HW5-parasite.txt", header = TRUE) %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    area = as_factor(area),
+    year = as_factor(year)
+  )
+```
+
+
+Fit a Poisson model with log link to the data with area, year, and length as predictors
+```{r}
+par_fit = glm(intensity ~ area + year + length, 
+         family = poisson, 
+         data = par_data) 
+
+# View summary of par_fit
+summary(par_fit)
+```
+
+The log ratio of the number of parasites for a fish with area equal to 2 vs area equal to 1 is `r par_fit$coefficients[2]`, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 3 vs area equal to 1 is `r par_fit$coefficients[3]`, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 4 vs area equal to 1 is `r par_fit$coefficients[4]`, holding year and length constant. The log ratio of the number of parasites for a fish of year 2000 vs year 1999 is `r par_fit$coefficients[5]`, holding area and length constant. The log ratio of the number of parasites for a fish of year 2001 vs year 1999 is `r par_fit$coefficients[6]`, holding area and length constant. The log ratio of the number of parasites for a 1 unit increase in length is `r par_fit$coefficients[7]`, holding area and year constant. The log of the expected number of parasites for a fish with area equal to 1 and of year 1999 with length equal to zero is `r par_fit$coefficients[1]`.

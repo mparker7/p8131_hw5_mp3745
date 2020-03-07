@@ -12,7 +12,7 @@
 
 <meta name="author" content="Matthew Parker" />
 
-<meta name="date" content="2020-03-05" />
+<meta name="date" content="2020-03-07" />
 
 <title>p8131_hw5_mp3745</title>
 
@@ -365,7 +365,7 @@ summary {
 
 <h1 class="title toc-ignore">p8131_hw5_mp3745</h1>
 <h4 class="author">Matthew Parker</h4>
-<h4 class="date">2020-03-05</h4>
+<h4 class="date">2020-03-07</h4>
 
 </div>
 
@@ -506,6 +506,56 @@ summary(m2, dispersion = phi)</code></pre>
 <li><p>there may not be a significant association between carapace width with number of satellites, when accounting for weight, and</p></li>
 <li><p>there may not be a significant association between weight with number of satellites, when accounting for carapce width.</p></li>
 </ul>
+</div>
+</div>
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
+<div id="a-1" class="section level4">
+<h4>(a)</h4>
+<p>Read in the parasite data</p>
+<pre class="r"><code>par_data = read.table(&quot;./data/HW5-parasite.txt&quot;, header = TRUE) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(
+    area = as_factor(area),
+    year = as_factor(year)
+  )</code></pre>
+<p>Fit a Poisson model with log link to the data with area, year, and length as predictors</p>
+<pre class="r"><code>par_fit = glm(intensity ~ area + year + length, 
+         family = poisson, 
+         data = par_data) 
+
+# View summary of par_fit
+summary(par_fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = intensity ~ area + year + length, family = poisson, 
+##     data = par_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -9.3632  -2.7158  -2.0142  -0.4731  30.2492  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.6431709  0.0542838  48.692  &lt; 2e-16 ***
+## area2       -0.2119557  0.0491691  -4.311 1.63e-05 ***
+## area3       -0.1168602  0.0428296  -2.728  0.00636 ** 
+## area4        1.4049366  0.0356625  39.395  &lt; 2e-16 ***
+## year2000     0.6702801  0.0279823  23.954  &lt; 2e-16 ***
+## year2001    -0.2181393  0.0287535  -7.587 3.29e-14 ***
+## length      -0.0284228  0.0008809 -32.265  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 25797  on 1190  degrees of freedom
+## Residual deviance: 19153  on 1184  degrees of freedom
+##   (63 observations deleted due to missingness)
+## AIC: 21089
+## 
+## Number of Fisher Scoring iterations: 7</code></pre>
+<p>The log ratio of the number of parasites for a fish with area equal to 2 vs area equal to 1 is -0.2119557, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 3 vs area equal to 1 is -0.1168602, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 4 vs area equal to 1 is 1.4049366, holding year and length constant. The log ratio of the number of parasites for a fish of year 2000 vs year 1999 is 0.6702801, holding area and length constant. The log ratio of the number of parasites for a fish of year 2001 vs year 1999 is -0.2181393, holding area and length constant. The log ratio of the number of parasites for a 1 unit increase in length is -0.0284228, holding area and year constant. The log of the expected number of parasites for a fish with area equal to 1 and of year 1999 with length equal to zero is 2.6431709.</p>
 </div>
 </div>
 
