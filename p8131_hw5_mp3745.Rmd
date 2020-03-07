@@ -10,6 +10,7 @@ library(tidyverse)
 library(viridis)
 library(nnet)
 library(MASS)
+library(pscl)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -158,3 +159,18 @@ par_fit_pval = 1 - pchisq(par_fit_dev, (nrow(par_data) - 7))
 ```
 
 Since p-value = `r par_fit_pval` < 0.05, we reject the null hypothesis of the model being a good fit for the data.
+
+
+#### (c)
+
+Fit zero-inflated poisson regression model based on the assumption that whether a fish is susceptible to parasites depends on the area of the fish and how many parasites a fish has (if they are susceptible) depends on length and year.
+```{r}
+zip_par_fit = zeroinfl(intensity ~ length + year | area, data = par_data)
+
+# View summary
+summary(zip_par_fit)
+```
+
+The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 2 vs 1 is `r zip_par_fit$coefficients$zero[2]`. The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 3 vs 1 is `r zip_par_fit$coefficients$zero[3]`. The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 4 vs 1 is `r zip_par_fit$coefficients$zero[4]`. The log odds of a fish not being susceptible to parasites for a fish with area equal to 1 is `r zip_par_fit$coefficients$zero[1]`.
+
+The log ratio of the number of parasites for a 1 unit increase in length is `r zip_par_fit$coefficients$count[2]`, holding year constant, given the fish is susceptible to parasites. The log ratio of the number of parasites for a fish of year 2000 vs year 1999 is `r zip_par_fit$coefficients$count[3]`, holding length constant, given the fish is susceptible to parasites. The log ratio of the number of parasites for a fish of year 2001 vs year 1999 is `r zip_par_fit$coefficients$count[4]`, holding length constant, given the fish is susceptible to parasites. The log of the expected number of parasites for a fish of year 1999 with length equal to zero is `r zip_par_fit$coefficients$count[2]`, given the fish is susceptible to parasites.

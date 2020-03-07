@@ -566,6 +566,42 @@ par_fit_dev = sum(residuals(par_fit, type = 'deviance')^2)
 par_fit_pval = 1 - pchisq(par_fit_dev, (nrow(par_data) - 7))</code></pre>
 <p>Since p-value = 0 &lt; 0.05, we reject the null hypothesis of the model being a good fit for the data.</p>
 </div>
+<div id="c-1" class="section level4">
+<h4>(c)</h4>
+<p>Fit zero-inflated poisson regression model based on the assumption that whether a fish is susceptible to parasites depends on the area of the fish and how many parasites a fish has (if they are susceptible) depends on length and year.</p>
+<pre class="r"><code>zip_par_fit = zeroinfl(intensity ~ length + year | area, data = par_data)
+
+# View summary
+summary(zip_par_fit)</code></pre>
+<pre><code>## 
+## Call:
+## zeroinfl(formula = intensity ~ length + year | area, data = par_data)
+## 
+## Pearson residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.5077 -0.7131 -0.6447 -0.2369 26.2175 
+## 
+## Count model coefficients (poisson with log link):
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  4.6630528  0.0459573 101.465  &lt; 2e-16 ***
+## length      -0.0438777  0.0009298 -47.193  &lt; 2e-16 ***
+## year2000     0.4214742  0.0278972  15.108  &lt; 2e-16 ***
+## year2001     0.0988372  0.0286162   3.454 0.000553 ***
+## 
+## Zero-inflation model coefficients (binomial with logit link):
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  0.001796   0.121809   0.015    0.988    
+## area2        0.746780   0.183065   4.079 4.52e-05 ***
+## area3        0.680876   0.161795   4.208 2.57e-05 ***
+## area4       -0.882655   0.180987  -4.877 1.08e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+## 
+## Number of iterations in BFGS optimization: 15 
+## Log-likelihood: -7563 on 8 Df</code></pre>
+<p>The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 2 vs 1 is 0.7467803. The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 3 vs 1 is 0.680876. The log odds ratio of a fish not being susceptible to parasites for a fish with area equal to 4 vs 1 is -0.8826545. The log odds of a fish not being susceptible to parasites for a fish with area equal to 1 is 0.0017965.</p>
+<p>The log ratio of the number of parasites for a 1 unit increase in length is -0.0438777, holding year constant, given the fish is susceptible to parasites. The log ratio of the number of parasites for a fish of year 2000 vs year 1999 is 0.4214742, holding length constant, given the fish is susceptible to parasites. The log ratio of the number of parasites for a fish of year 2001 vs year 1999 is 0.0988372, holding length constant, given the fish is susceptible to parasites. The log of the expected number of parasites for a fish of year 1999 with length equal to zero is -0.0438777, given the fish is susceptible to parasites.</p>
+</div>
 </div>
 
 
