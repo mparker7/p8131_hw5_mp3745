@@ -557,6 +557,15 @@ summary(par_fit)</code></pre>
 ## Number of Fisher Scoring iterations: 7</code></pre>
 <p>The log ratio of the number of parasites for a fish with area equal to 2 vs area equal to 1 is -0.2119557, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 3 vs area equal to 1 is -0.1168602, holding year and length constant. The log ratio of the number of parasites for a fish with area equal to 4 vs area equal to 1 is 1.4049366, holding year and length constant. The log ratio of the number of parasites for a fish of year 2000 vs year 1999 is 0.6702801, holding area and length constant. The log ratio of the number of parasites for a fish of year 2001 vs year 1999 is -0.2181393, holding area and length constant. The log ratio of the number of parasites for a 1 unit increase in length is -0.0284228, holding area and year constant. The log of the expected number of parasites for a fish with area equal to 1 and of year 1999 with length equal to zero is 2.6431709.</p>
 </div>
+<div id="b-1" class="section level4">
+<h4>(b)</h4>
+<p>Test for goodness of fit</p>
+<pre class="r"><code># Check goodness of fit of par_fit
+par_fit_dev = sum(residuals(par_fit, type = 'deviance')^2)
+
+par_fit_pval = 1 - pchisq(par_fit_dev, (nrow(par_data) - 7))</code></pre>
+<p>Since p-value = 0 &lt; 0.05, we reject the null hypothesis of the model being a good fit for the data.</p>
+</div>
 </div>
 
 
